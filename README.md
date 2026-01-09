@@ -47,7 +47,7 @@ To get a local copy up and running, follow these simple steps.
     ```
    4. **Install Application**
 
-   Install application using **KingInstaller1.4**
+      Install application using **KingInstaller1.4**
 
 ### Important Notes for Release Build
 The `assembleRelease` task requires the application to be signed. This project is configured to use `app/aaplayer.jks` and its credentials from `app/keystore.properties`.
