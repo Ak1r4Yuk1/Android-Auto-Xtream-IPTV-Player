@@ -40,7 +40,9 @@ To get a local copy up and running, follow these simple steps.
     ```bash
     ANDROID_HOME=/path/to/your/Android/Sdk ./gradlew assembleRelease
     ```
-
+4. **Install Application**
+   Install application using **KingInstaller1.4**
+   
     Alternatively, for a debug build (which does not require release signing), you can use:
     ```bash
     ANDROID_HOME=/path/to/your/Android/Sdk ./gradlew assembleDebug
