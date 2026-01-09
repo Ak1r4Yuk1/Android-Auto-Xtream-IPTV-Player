@@ -3,6 +3,8 @@
 ## Description
 The Android Auto Xtream IPTV Player (AAPlayer) is an application designed to bring IPTV streaming capabilities to your Android Auto-enabled vehicle. It allows users to access their Xtream IPTV services directly from their car's display, providing a seamless and integrated entertainment experience on the go.
 
+If you wanna support me and my projects: https://paypal.me/akirayuki96
+
 ## Features
 -   **Android Auto Integration**: Designed to work flawlessly within the Android Auto environment.
 -   **Xtream IPTV Support**: Connects to Xtream IPTV services for live TV, movies, and series.
