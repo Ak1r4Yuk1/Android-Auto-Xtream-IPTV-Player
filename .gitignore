@@ -10,6 +10,7 @@
 *.jar
 *.kotlin_built_ins
 *.kotlin_module
+.kotlin/
 
 # Files for the Dalvik VM
 *.dex
