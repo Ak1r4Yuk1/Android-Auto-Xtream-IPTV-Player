@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="black">#FF000000</color>
-    <color name="red_600">#FFDC2626</color>
-    <color name="white">#FFFFFFFF</color>
-    <string name="app_name">AAPlayer</string>
-    <style name="Theme.AAPlayer" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
-</resources>
