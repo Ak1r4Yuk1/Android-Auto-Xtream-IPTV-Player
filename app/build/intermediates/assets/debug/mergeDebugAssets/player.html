@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Streamify Auto - Seat Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght @600;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #e2e8f0; -webkit-tap-highlight-color: transparent; margin: 0; overflow: hidden; }
+        
+        .scroll-container { overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
+        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        #sidebar { transition: all 0.3s ease; z-index: 100; }
+        .sidebar-closed { transform: translateX(-100%); width: 0 !important; opacity: 0; overflow: hidden; }
+        
+        .auto-btn { padding: 18px !important; font-size: 11px !important; font-weight: 900; text-transform: uppercase; border-radius: 14px; }
+        .active-tab { background-color: #e10600 !important; color: white !important; }
+        
+        /* CARD IDENTICHE PER STRUTTURA */
+        .card-container { 
+            background: #0f172a; 
+            border-radius: 16px; 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 12px;
+        }
+
+        .card-tv { aspect-ratio: 16/10; }
+        .card-poster { aspect-ratio: 16/14; } 
+
+        .card-container img { 
+            max-height: 80%; 
+            max-width: 100%; 
+            object-fit: contain;
+        }
+
+        .card-title {
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            margin-top: 6px;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .overlay-full { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 150; display: flex; flex-direction: column; }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <div id="login-view" class="fixed inset-0 z-[300] bg-black scroll-container p-6">
+        <div class="w-full max-w-md mx-auto bg-slate-900 rounded-[2.5rem] p-8 border border-slate-800 shadow-2xl mt-10">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"><i class="fas fa-play text-white text-2xl"></i></div>
+                <h1 class="text-xl font-black uppercase italic text-white">AAPlayer - Ak1r4Yuk1</h1>
+            </div>
+            <form id="login-form" class="space-y-3">
+                <input id="login-url" type="url" required placeholder="URL Server" class="w-full bg-slate-800 rounded-xl px-5 py-4 text-sm text-white outline-none border border-transparent focus:border-red-600">
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="login-user" required placeholder="User" class="w-full bg-slate-800 rounded-xl px-5 py-4 text-sm text-white outline-none">
+                    <input id="login-pass" type="password" required placeholder="Pass" class="w-full bg-slate-800 rounded-xl px-5 py-4 text-sm text-white outline-none">
+                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-red-600 text-white font-black py-5 rounded-xl uppercase text-xs">Accedi e Salva</button>
+            </form>
+            <div id="saved-accounts-section" class="mt-8 border-t border-slate-800 pt-6 hidden">
+                <p class="text-[10px] font-black text-slate-500 uppercase mb-3 px-2 text-center">Account Salvati</p>
+                <div id="saved-accounts-list" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-view" class="hidden h-screen flex flex-row overflow-hidden">
+        <aside id="sidebar" class="w-[200px] bg-slate-900 border-r border-slate-800 flex flex-col h-full relative">
+            <div class="p-3 space-y-3">
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-[10px] font-black uppercase text-red-600 italic">Menu</span>
+                    <button onclick="toggleSidebar()" class="text-slate-500 p-2"><i class="fas fa-chevron-left"></i></button>
+                </div>
+                <div class="grid grid-cols-3 gap-1 bg-black p-1 rounded-xl">
+                    <button onclick="changeSection('live')" id="tab-live" class="auto-btn py-2 active-tab">TV</button>
+                    <button onclick="changeSection('vod')" id="tab-vod" class="auto-btn py-2 text-slate-500">Film</button>
+                    <button onclick="changeSection('series')" id="tab-series" class="auto-btn py-2 text-slate-500">Serie</button>
+                </div>
+                <input id="search-input" type="text" placeholder="Cerca..." class="w-full bg-slate-800 rounded-lg px-3 py-3 text-[10px] text-white outline-none border border-slate-700">
+            </div>
+            <div id="categories-container" class="flex-1 scroll-container custom-scrollbar px-3 space-y-1 pb-4"></div>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-black h-full">
+            <header class="h-12 bg-slate-900 px-4 flex items-center border-b border-white/5">
+                <button id="menu-open-btn" onclick="toggleSidebar()" class="hidden mr-4 text-white p-2 bg-slate-800 rounded-lg"><i class="fas fa-bars"></i></button>
+                <h3 id="view-title" class="text-white font-black text-[9px] uppercase tracking-widest text-center flex-1">Streaming</h3>
+            </header>
+            <div id="content-grid" class="flex-1 scroll-container custom-scrollbar p-3 grid grid-cols-3 gap-3 pb-24"></div>
+        </main>
+    </div>
+
+    <div id="series-overlay" class="hidden overlay-full p-4">
+        <div class="flex items-center gap-4 mb-4">
+            <button onclick="closeOverlay('series-overlay')" class="w-14 h-14 bg-red-600 rounded-2xl text-white flex items-center justify-center shadow-lg"><i class="fas fa-times text-xl"></i></button>
+            <h2 id="series-title" class="text-white font-black uppercase text-[10px] truncate flex-1">Dettagli Serie</h2>
+        </div>
+        <div class="flex flex-1 gap-4 overflow-hidden text-[10px]">
+            <div id="seasons-list" class="w-1/3 scroll-container custom-scrollbar space-y-2"></div>
+            <div id="episodes-list" class="flex-1 scroll-container custom-scrollbar space-y-2 bg-slate-900/50 p-2 rounded-2xl border border-white/5"></div>
+        </div>
+    </div>
+
+    <div id="player-overlay" class="hidden fixed inset-0 z-[500] bg-black">
+        <button onclick="closePlayer()" class="absolute top-4 left-4 z-[510] w-16 h-16 bg-red-600 rounded-2xl text-white flex items-center justify-center shadow-2xl">
+            <i class="fas fa-arrow-left text-2xl"></i>
+        </button>
+        <video id="main-video" class="w-full h-full object-contain" controls autoPlay playsinline></video>
+    </div>
+
+    <script>
+        let allData = { live: [], vod: [], series: [] }, allCats = { live: [], vod: [], series: [] };
+        let authData = { url: '', user: '', pass: '' }, currentSection = 'live', selectedCategory = null, hls = null;
+
+        const apiFetch = (u) => fetch(u).then(r => r.json());
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const openBtn = document.getElementById('menu-open-btn');
+            sb.classList.toggle('sidebar-closed');
+            openBtn.classList.toggle('hidden');
+        }
+
+        // Gestione Profili
+        function saveProfile(url, user, pass) {
+            let profiles = JSON.parse(localStorage.getItem('seat_stream_profiles') || '[]');
+            if (!profiles.find(p => p.user === user && p.url === url)) {
+                profiles.push({ url, user, pass });
+                localStorage.setItem('seat_stream_profiles', JSON.stringify(profiles));
+            }
+        }
+
+        function loadProfiles() {
+            const profiles = JSON.parse(localStorage.getItem('seat_stream_profiles') || '[]');
+            const list = document.getElementById('saved-accounts-list');
+            if (profiles.length > 0) {
+                document.getElementById('saved-accounts-section').classList.remove('hidden');
+                list.innerHTML = profiles.map(p => `
+                    <div onclick="fillLogin('${p.url}','${p.user}','${p.pass}')" class="p-4 bg-slate-800 rounded-2xl flex justify-between items-center active:bg-red-600">
+                        <span class="text-[10px] font-black uppercase text-white">${p.user}</span>
+                        <i class="fas fa-chevron-right text-red-500"></i>
+                    </div>`).join('');
+            }
+        }
+
+        window.fillLogin = (url, user, pass) => {
+            document.getElementById('login-url').value = url;
+            document.getElementById('login-user').value = user;
+            document.getElementById('login-pass').value = pass;
+        };
+
+        document.getElementById('login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const url = document.getElementById('login-url').value.replace(/\/$/, "");
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            authData = { url, user, pass };
+
+            try {
+                // Caricamento completo di tutto per permettere la ricerca globale
+                const base = `${url}/player_api.php?username=${user}&password=${pass}`;
+                allCats.live = await apiFetch(`${base}&action=get_live_categories`);
+                allData.live = await apiFetch(`${base}&action=get_live_streams`);
+                allCats.vod = await apiFetch(`${base}&action=get_vod_categories`);
+                allData.vod = await apiFetch(`${base}&action=get_vod_streams`);
+                allCats.series = await apiFetch(`${base}&action=get_series_categories`);
+                allData.series = await apiFetch(`${base}&action=get_series`);
+
+                saveProfile(url, user, pass);
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('dashboard-view').classList.remove('hidden');
+                changeSection('live');
+            } catch (err) { alert("Dati non validi"); }
+        };
+
+        function changeSection(section) {
+            currentSection = section;
+            document.querySelectorAll('#tab-live, #tab-vod, #tab-series').forEach(b => b.classList.toggle('active-tab', b.id === 'tab-'+section));
+            document.getElementById('view-title').innerText = section.toUpperCase();
+            
+            // Default: seleziona la prima categoria della lista
+            selectedCategory = (allCats[section] && allCats[section].length > 0) ? allCats[section][0].category_id : null;
+            renderCategories(); renderGrid();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = allCats[currentSection].map(c => `
+                <button onclick="filterCat('${c.category_id}')" class="w-full text-left px-4 py-4 rounded-xl text-[9px] font-black uppercase truncate ${selectedCategory == c.category_id ? 'bg-red-600 text-white' : 'text-slate-500'}">
+                    ${c.category_name}
+                </button>`).join('');
+        }
+
+        function filterCat(id) { selectedCategory = id; renderCategories(); renderGrid(); }
+
+        function renderGrid() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const container = document.getElementById('content-grid');
+            
+            // Logica Ricerca Globale: se c'è testo nel campo ricerca, cerca in tutta la sezione ignorando le categorie
+            const filtered = allData[currentSection].filter(i => {
+                const name = (i.name || i.title || "").toLowerCase();
+                const matchSearch = name.includes(query);
+                const matchCat = query.length > 0 ? true : (i.category_id == selectedCategory);
+                return matchSearch && matchCat;
+            });
+
+            container.innerHTML = filtered.slice(0, 80).map(i => {
+                const title = i.name || i.title;
+                const thumb = i.stream_icon || i.cover;
+                const cardClass = currentSection === 'live' ? 'card-tv' : 'card-poster';
+                
+                return `
+                <div onclick="handleClick('${i.stream_id || i.series_id}')" class="card-container ${cardClass} active:scale-95 transition-transform">
+                    <img src="${thumb}" onerror="this.src='https://via.placeholder.com/150x150?text=Seat'">
+                    <div class="card-title text-white">${title}</div>
+                </div>`;
+            }).join('');
+            container.scrollTop = 0;
+        }
+
+        async function handleClick(id) {
+            if(currentSection === 'live') return openPlayer(`${authData.url}/live/${authData.user}/${authData.pass}/${id}.m3u8`, 'm3u8');
+            if(currentSection === 'vod') {
+                const info = await apiFetch(`${authData.url}/player_api.php?username=${authData.user}&password=${authData.pass}&action=get_vod_info&vod_id=${id}`);
+                return openPlayer(`${authData.url}/movie/${authData.user}/${authData.pass}/${id}.${info.info.container_extension || 'mp4'}`, 'video');
+            }
+            if(currentSection === 'series') {
+                const info = await apiFetch(`${authData.url}/player_api.php?username=${authData.user}&password=${authData.pass}&action=get_series_info&series_id=${id}`);
+                showSeries(info);
+            }
+        }
+
+        function showSeries(data) {
+            document.getElementById('series-overlay').classList.remove('hidden');
+            document.getElementById('series-title').innerText = data.info.name;
+            const seasons = data.episodes || {};
+            const keys = Object.keys(seasons);
+            document.getElementById('seasons-list').innerHTML = keys.map(k => `<button onclick="renderEpisodes(${JSON.stringify(seasons[k]).replace(/"/g, '&quot;')})" class="w-full py-4 bg-slate-800 text-[10px] font-black uppercase rounded-xl text-white">Stagione ${k}</button>`).join('');
+            if(keys.length > 0) renderEpisodes(seasons[keys[0]]);
+        }
+
+        window.renderEpisodes = (eps) => {
+            document.getElementById('episodes-list').innerHTML = eps.map(e => `
+                <div onclick="openPlayer('${authData.url}/series/${authData.user}/${authData.pass}/${e.id}.${e.container_extension || 'mp4'}', 'video')" class="p-3 bg-slate-800/80 rounded-xl flex justify-between items-center active:bg-red-600 mb-2 border border-white/5">
+                    <span class="text-[9px] font-bold text-white uppercase truncate flex-1 pr-2">${e.title}</span><i class="fas fa-play text-red-500 text-lg"></i>
+                </div>`).join('');
+        };
+
+        function openPlayer(url, type) {
+            const v = document.getElementById('main-video');
+            document.getElementById('player-overlay').classList.remove('hidden');
+            if (hls) hls.destroy();
+            if (type === 'm3u8' && Hls.isSupported()) {
+                hls = new Hls(); 
+                hls.loadSource(url); 
+                hls.attachMedia(v);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => v.play());
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    console.error('HLS.js error:', data);
+                });
+            } else { v.src = url; v.play(); }
+        }
+
+        window.closePlayer = () => { const v = document.getElementById('main-video'); v.pause(); v.src = ""; document.getElementById('player-overlay').classList.add('hidden'); };
+        window.closeOverlay = (id) => document.getElementById(id).classList.add('hidden');
+        document.getElementById('search-input').oninput = renderGrid;
+
+        window.onload = loadProfiles;
+    </script>
+</body>
+</html>
