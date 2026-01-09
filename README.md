@@ -55,8 +55,5 @@ keyPassword=your_key_password
 ```
 If you are using the `aaplayer.jks` and `keystore.properties` files that were just committed to the repository, ensure they match your expected credentials.
 
-## Contributing
-(This section can be added later if you plan to accept contributions.)
-
 ## License
-(This section can be added later to specify the project's license.)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
