@@ -1,0 +1,97 @@
+# Built application files
+*.apk
+*.ap_
+*.aab
+*.aar
+
+# Files for the ART/JVM
+*.dex
+*.class
+*.jar
+*.kotlin_built_ins
+*.kotlin_module
+
+# Files for the Dalvik VM
+*.dex
+
+# Gradle files
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration files (SDK locations, etc.)
+local.properties
+.idea/workspace.xml
+.idea/libraries/
+.idea/caches/
+.idea/modules.xml
+.idea/compiler.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/gradle.xml
+.idea/kotlinWorkflow.xml
+.idea/libraries/
+.idea/jarRepositories.xml
+.idea/codeStyles/
+.idea/dictionaries/
+.idea/runConfigurations/
+
+# Mac files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux files
+*.swp
+
+# Windows files
+thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Android Studio and IntelliJ IDEA files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.settings/
+.classpath
+local.properties
+lint-results.html
+lint-results.xml
+
+# Keystore files (sensitive information)
+*.jks
+*.keystore
+
+# Google Services (sensitive information)
+google-services.json
+
+# Crashlytics/Fabric (sensitive information)
+crashlytics.properties
+
+# AVD files
+.android/avd/
+
+# Docs
+docs/
+
+# Annotation processing
+*.kapt
+
+# Room persistence
+*.room.schemaLocation
+
+# Android Profiling
+*.trace
+
+# Firebase
+.firebaserc
+firebase-debug.log
+firebase-release.log
+firebase-debug.json
+firebase-release.json
