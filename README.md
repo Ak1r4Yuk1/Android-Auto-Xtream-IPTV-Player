@@ -40,13 +40,13 @@ To get a local copy up and running, follow these simple steps.
     ```bash
     ANDROID_HOME=/path/to/your/Android/Sdk ./gradlew assembleRelease
     ```
-4. **Install Application**
-   Install application using **KingInstaller1.4**
-   
+
     Alternatively, for a debug build (which does not require release signing), you can use:
     ```bash
     ANDROID_HOME=/path/to/your/Android/Sdk ./gradlew assembleDebug
     ```
+   4. **Install Application**
+   Install application using **KingInstaller1.4**
 
 ### Important Notes for Release Build
 The `assembleRelease` task requires the application to be signed. This project is configured to use `app/aaplayer.jks` and its credentials from `app/keystore.properties`.
