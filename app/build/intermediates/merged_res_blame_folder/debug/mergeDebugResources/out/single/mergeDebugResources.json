@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/xml_backup_rules.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/drawable_play_icon.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/drawable/play_icon.xml"
+    },
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/layout_presentation_browser.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/layout/presentation_browser.xml"
+    },
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/layout_activity_main.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/xml_network_security_config.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.akira.aaplayer.app-debug-39:/xml_data_extraction_rules.xml.flat",
+        "source": "com.akira.aaplayer.app-main-41:/xml/data_extraction_rules.xml"
+    }
+]
