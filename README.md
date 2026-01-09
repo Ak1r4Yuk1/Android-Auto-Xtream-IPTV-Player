@@ -46,6 +46,7 @@ To get a local copy up and running, follow these simple steps.
     ANDROID_HOME=/path/to/your/Android/Sdk ./gradlew assembleDebug
     ```
    4. **Install Application**
+
    Install application using **KingInstaller1.4**
 
 ### Important Notes for Release Build
